@@ -1,0 +1,36 @@
+{
+  "name": "universal-i18n",
+  "version": "1.0.0",
+  "description": "Universal localization toolkit",
+  "author": "Yanick Rochon <yanick.rochon@mind2soft.com>",
+  "keywords": [
+    "i18n",
+    "localization",
+    "plural"
+  ],
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "homepage": "https://github.com/yanickrochon/universal-i18n#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yanickrochon/universal-i18n.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yanickrochon/universal-i18n/issues"
+  },
+  "dependencies": {
+    "glob": "^6.0.1"
+  },
+  "devDependencies": {
+    "cldr-data": "^28.0.3",
+    "istanbul": "^0.4.1",
+    "mocha": "^2.3.4",
+    "should": "^7.1.1"
+  },
+  "license": "MIT"
+}

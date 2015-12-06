@@ -1,0 +1,17 @@
+{
+  "PLURAL_ZERO": "zero",
+  "PLURAL_ONE": "one",
+  "PLURAL_TWO": "two",
+  "PLURAL_FEW": "few",
+  "PLURAL_MANY": "many",
+  "PLURAL_OTHER": "other",
+
+  "GENDER_MALE": "m",
+  "GENDER_FEMALE": "f",
+  "GENDER_NEUTRAL": "n",
+
+  "DEFAULT_LOCALE": "en",
+  "DEFAULT_GENDER": "n",
+
+  "DEFAULT_SUBSTITUTION_PATTERN": "\\{\\{([\\w.]+)\\}\\}"
+}
