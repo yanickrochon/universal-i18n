@@ -10,7 +10,5 @@
   "GENDER_FEMALE": "f",
   "GENDER_NEUTRAL": "n",
 
-  "DEFAULT_LOCALE": "en",
-
-  "DEFAULT_SUBSTITUTION_PATTERN": "\\{\\{([\\w.]+)\\}\\}"
+  "DEFAULT_LOCALE": "en"
 }

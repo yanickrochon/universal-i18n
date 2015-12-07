@@ -31,6 +31,10 @@ var rules = {};
 var fnDefs = {};
 var plurals;
 var content = [
+  '/**',
+  'Plural file generated from CLDR-DATA (http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html)',
+  'See ../build_plurals.js for more information.',
+  '**/',
   "const C = require('./const');"
 ];
 
@@ -99,7 +103,7 @@ function buildRule(cldrData, name) {
         requireN = true;
 
         // i = integer digits of p.
-        vars['i'] = 'parseInt(n,10)||0';
+        vars['i'] = 'Math.floor(n,10)||0';
 
         return 'i';
       })
@@ -120,7 +124,7 @@ function buildRule(cldrData, name) {
       */
       .replace('f', function () {
         // f = visible fractional digits in p, with trailing zeros.
-        vars['f'] = 'parseInt((p+"").split(".")[1],10)||0';
+        vars['f'] = 'Math.floor((p+"").split(".")[1],10)||0';
 
         return 'f';
       })
@@ -128,7 +132,7 @@ function buildRule(cldrData, name) {
         requireN = true;
 
         // t = visible fractional digits in p, without trailing zeros.
-        vars['t'] = 'parseInt((n+"").split(".")[1],10)||0';
+        vars['t'] = 'Math.floor((n+"").split(".")[1],10)||0';
 
         return 't';
       })
@@ -156,7 +160,7 @@ function buildRule(cldrData, name) {
           var buffer;
 
           if (m) {
-            //for (buffer = [], m[1] = parseInt(m[1], 10), m[2] = parseInt(m[2], 10); m[1] <= m[2]; ++m[1]) {
+            //for (buffer = [], m[1] = Math.floor(m[1], 10), m[2] = Math.floor(m[2], 10); m[1] <= m[2]; ++m[1]) {
             //  buffer.push(v + ' ' + op  + ' ' + m[1]);
             //}
             //return buffer.join(' || ');

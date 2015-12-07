@@ -1,0 +1,10 @@
+/**
+Malformed JSON
+*/
+{
+
+  "foo",
+
+  bar
+
+}

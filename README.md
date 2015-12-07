@@ -19,7 +19,8 @@ npm install universal-i18n --save
 const i18n = require('universal-i18n');
 
 var i18nOptions = {
-  defaultLocale: 'fr'
+  defaultLocale: 'fr',
+  loaders: ['json']
 };
 var translator = i18n.Translator(i18nOptions);
 
@@ -87,6 +88,12 @@ translator.loadMessages('path/to/lc_messages').then(function (locales) {
   console.error('i18n:ERR!', error.message);
 });
 ```
+
+
+### Translator Options
+
+* `defaultLoacle` : *{string}* - the default locale when one is not specified (Default `"en"`)
+* `basePath` : *{string}* - the base path for relative messages paths. (Default `"."`)
 
 
 ### Plural Rules
