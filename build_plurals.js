@@ -30,7 +30,9 @@ rule[locale] => { cardinal: function, ordinal: function }
 var rules = {};
 var fnDefs = {};
 var plurals;
-var content = "const C = require('./const');\n\nmodule.exports = ";
+var content = [
+  "const C = require('./const');"
+];
 
 /**
 Build all cardinal rules from CLDR data
@@ -45,40 +47,57 @@ scanPluralData(require('cldr-data/supplemental/ordinals')['supplemental']['plura
 plurals = JSON.stringify(rules, null, 2);
 
 Object.keys(fnDefs).forEach(function (name) {
-  plurals = plurals.replace('"' + name + '"', fnDefs[name]);
+  plurals = plurals.replace(new RegExp('"' + name + '"', 'g'), name);
 });
 
+content.push('module.exports = ' + plurals + ';');
+content.push(Object.keys(fnDefs).map(function (name) { return fnDefs[name]; }).join('\n'));
 
-fs.writeFileSync('./lib/plurals.js', content + plurals + ';');
+
+fs.writeFileSync('./lib/plurals.js', content.join('\n\n'));
 
 
 // --------------------------------------------------------------------
 
 
 function scanPluralData(pluralData, type) {
+  var ruleCount = 1;
+  var _cache = {};
+
   Object.keys(pluralData).forEach(function (locale, index) {
-    var defName = type + index;
+    var defName = type + ruleCount;
+    var expr = pluralData[locale];
+    var cacheKey = JSON.stringify(expr);
 
     if (!rules[locale]) {
       rules[locale] = {};
     }
 
-    rules[locale][type] = defName;
-    fnDefs[defName] = buildRule(pluralData[locale]);
+    if (_cache[cacheKey]) {
+      rules[locale][type] = _cache[cacheKey];
+    } else {
+      rules[locale][type] = _cache[cacheKey] = defName;
+      fnDefs[defName] = buildRule(expr, defName);
+
+      ruleCount++;
+    }
   });
 }
 
 
-function buildRule(cldrData) {
+function buildRule(cldrData, name) {
   var vars  = {
     // n = absolute value of the source number (integer and decimals)
     'n': 'Math.abs(p)||0'
   };
+  var requireN = false;
   var rule = Object.keys(cldrData).map(function (key) {
     var pluralKey = key.substr(key.lastIndexOf('-') + 1);
     var expr = cldrData[key].substr(0, cldrData[key].indexOf('@')).trim()
       // http://unicode.org/reports/tr35/tr35-numbers.html#Language_Plural_Rules
       .replace('i', function () {
+        requireN = true;
+
         // i = integer digits of p.
         vars['i'] = 'parseInt(n,10)||0';
 
@@ -106,6 +125,8 @@ function buildRule(cldrData) {
         return 'f';
       })
       .replace('t', function () {
+        requireN = true;
+
         // t = visible fractional digits in p, without trailing zeros.
         vars['t'] = 'parseInt((n+"").split(".")[1],10)||0';
 
@@ -113,6 +134,10 @@ function buildRule(cldrData) {
       })
       .replace(MOD_ALIAS, function (match, v, mod) {
         var alias = v + mod;
+
+        if (v === 'n') {
+          requireN = true;
+        }
 
         if (!vars[alias]) {
           vars[alias] = match;
@@ -126,7 +151,7 @@ function buildRule(cldrData) {
         // n != 0..2,5 ==> (n !== 0 && n !== 1 && n !== 2 && n !== 5)
 
 
-        return '(' + n.split(',').map(function (r) {
+        return n.split(',').map(function (r) {
           var m = r.match(EXPR_RANGE);
           var buffer;
 
@@ -140,7 +165,7 @@ function buildRule(cldrData) {
           } else {
             return v + ' ' + op + ' ' + r;
           }
-        }).join(op === '=' ? ' || ' : ' && ') + ')';
+        }).join(op === '=' ? ' || ' : ' && ');
       })
       .replace(OP_AND, ' && ')
       .replace(OP_OR, ' || ')
@@ -159,9 +184,13 @@ function buildRule(cldrData) {
     return expr;
   }).join(' : ');
 
+  if (!requireN && rule.indexOf('n') === -1) {
+    delete vars['n'];
+  }
+
   vars = Object.keys(vars).map(function (v) {
     return v + ' = ' + vars[v];
   }).join(', ');
 
-  return 'function (p) { var ' + vars + '; return ' + rule + '; }';
+  return 'function ' + name + '(p) { ' + (vars && ('var ' + vars + '; ')) + 'return ' + rule + '; }';
 }
