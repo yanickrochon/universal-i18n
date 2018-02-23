@@ -1,12 +1,8 @@
-lib-cov
-*.seed
+coverage
+locale
+node_modules
+rule
+
 *.log
-*.csv
-*.dat
-*.out
-*.pid
-*.gz
 
 npm-debug.log
-node_modules
-coverage

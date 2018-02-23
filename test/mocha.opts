@@ -1,5 +1,0 @@
---require should
---timeout 3000
---reporter spec
---ui bdd
-test/**/*.test.js

@@ -1,20 +1,20 @@
 
-describe('Test Translator', function () {
+describe('Test Translator', () => {
 
+  const C = require('../lib/const');
   const Translator = require('../lib/translator');
 
 
-  it('should load with default options', function () {
+  it('should load with default options', () => {
     var t = new Translator();
 
-    t._loaders.should.be.instanceOf(Array).eql([ require('../lib/loaders/json') ]);
-    t._messages.should.be.instanceOf(Object).eql({});
-    t.basePath.should.be.instanceOf(String).equal(process.cwd());
-    t.defaultLocale.should.be.instanceOf(String).equal(require('../lib/const').DEFAULT_LOCALE);
-    t.tokenPattern.should.be.instanceOf(RegExp).equal(Translator.DEFAULT_TOKEN_PATTERN);
+    expect( t._messages ).toEqual( {} );
+    expect( t.getDefaultLocale() ).toEqual( C.DEFAULT_LOCALE );
+    expect( t.getTokenPattern() ).toEqual( Translator.DEFAULT_TOKEN_PATTERN );
   });
 
 
+  return;
   describe('Loaders', function () {
 
     it('should not allow modifying loaders', function () {
@@ -166,6 +166,7 @@ describe('Test Translator', function () {
 
     it('should translate basic', function () {
       t.translate('Hello world!').should.equal('Bonjour monde!');
+      t.translate('Hello world!', 'en').should.equal('Hello world!');
     });
 
     it('should translate plurals', function () {
@@ -194,6 +195,32 @@ describe('Test Translator', function () {
 
     it('should translate gender');
 
+  });
+
+
+  describe('Loading messages', function () {
+
+    const join = require('path').join;
+    const messagePath = join(__dirname, '..', 'fixtures', 'lc_messages');
+
+    it('should load from path', function (done) {
+      var t = Translator();
+
+      t.loadMessages(messagePath).then(function (locales) {
+        locales.should.eql(['en', 'es', 'fr']);
+
+        t.translate('Hello world', 'en').should.equal('Hello world');
+        t.translate('Hello world', 'fr').should.equal('Bonjour monde');
+        t.translate('Hello world', 'es').should.equal('Hola mundo');
+
+        t.translate('test', 'en').should.equal('en');
+        t.translate('test', 'es').should.equal('es');
+        t.translate('test', 'fr').should.equal('fr');
+
+        done();
+      }).catch(done);
+
+    });
 
   });
 

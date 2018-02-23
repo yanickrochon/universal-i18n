@@ -1,5 +1,4 @@
+.circleci/
 coverage/
-fixtures/
 test/
-.travis.yml
 build_plurals.js

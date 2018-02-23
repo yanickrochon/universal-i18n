@@ -1,6 +1,6 @@
 {
   "name": "universal-i18n",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Universal localization toolkit",
   "author": "Yanick Rochon <yanick.rochon@mind2soft.com>",
   "keywords": [
@@ -8,14 +8,16 @@
     "localization",
     "plural"
   ],
-  "main": "index.js",
+  "main": "lib/translator.js",
   "directories": {
-    "test": "test"
+    "lib": "lib",
+    "locale": "locale",
+    "rule": "rule"
   },
   "scripts": {
-    "test": "mocha",
-    "test-cov": "istanbul cover _mocha",
-    "test-travis": "istanbul cover _mocha --report lcovonly"
+    "postinstall": "node ./build.js",
+    "test": "jest",
+    "test-cov": "npm run test -- --coverage"
   },
   "homepage": "https://github.com/yanickrochon/universal-i18n#readme",
   "repository": {
@@ -26,15 +28,11 @@
     "url": "https://github.com/yanickrochon/universal-i18n/issues"
   },
   "dependencies": {
-    "glob": "^6.0.1",
-    "merge": "^1.2.0",
-    "node-json-minify": "^1.0.0"
+    "merge": "^1.2.0"
   },
   "devDependencies": {
-    "cldr-data": "^28.0.3",
-    "istanbul": "^0.4.1",
-    "mocha": "^2.3.4",
-    "should": "^7.1.1"
+    "cldr-data": "^32.0.1",
+    "jest": "^22.1.4"
   },
   "license": "MIT"
 }

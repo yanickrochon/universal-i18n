@@ -1,7 +1,6 @@
 # Universal i18n
 
-[![Build Status](https://travis-ci.org/yanickrochon/universal-i18n.svg)](https://travis-ci.org/yanickrochon/universal-i18n)
-[![Coverage Status](https://coveralls.io/repos/yanickrochon/universal-i18n/badge.svg?branch=master&service=github)](https://coveralls.io/github/yanickrochon/universal-i18n?branch=master)
+[![CircleCI](https://circleci.com/gh/yanickrochon/universal-matrix/tree/master.svg?style=svg)](https://circleci.com/gh/yanickrochon/universal-matrix/tree/master)
 
 Universal localization toolkit
 
@@ -18,83 +17,88 @@ npm install universal-i18n --save
 ```javascript
 const i18n = require('universal-i18n');
 
-var i18nOptions = {
-  defaultLocale: 'fr',
-  loaders: ['json']
+const i18nOptions = {
+  defaultLocale: 'en',
+  /**
+  This is required, so JavaScript bundlers and minifiers will know exactly what
+  to include. Typically, these should be retrieved synchronously as the size
+  of the module is considerably, and intentionally small. Without specifying
+  these, there will be no plural ssupport for the translations.
+  */
+  availableLocales: {
+    'en': require('universal-i18n/locale/en'),
+    'fr': require('universal-i18n/locale/fr'),
+  }
 };
-var translator = i18n.Translator(i18nOptions);
+const translator = i18n.Translator(i18nOptions);
 
-translator.loadMessages('path/to/lc_messages').then(function (locales) {
-  // locales is an array of found and loaded locales from the given path
-  //  ex: ['en', 'fr', 'es']
+// load messages, an object previously loaded
+translator.addMessages('fr', jsonMessagesFr);
+translator.addMessages('es', jsonMessagesEs);
 
-  // --[fr.json]--
-  // {
-  //   "Hello world!": "Bonjour monde!"
-  // }
-  translator.translate('Hello world!');
-  // -> "Bonjour monde!"
+// --[messages['fr']]--
+// {
+//   "Hello world!": "Bonjour monde!"
+// }
+translator.translate('Hello world!');
+// -> "Bonjour monde!"
 
-  // --[es.json]--
-  // {
-  //   "Hello world!": "¡Hola Mundo!"
-  // }
-  translator.translate('Hello world!', 'es');
-  // -> "¡Hola Mundo!"
+// --[messages[es]]--
+// {
+//   "Hello world!": "¡Hola Mundo!"
+// }
+translator.translate('Hello world!', 'es');
+// -> "¡Hola Mundo!"
 
-  translator.translate('Hello world!', { locale: 'es' });
-  // -> "¡Hola Mundo!"
+translator.translate('Hello world!', { locale: 'es' });
+// -> "¡Hola Mundo!"
 
-  // see plurals for more info
-  // --[en.json]--
-  // {
-  //   "You have {{n}} messages": {
-  //     "zero": "You have no messages",
-  //     "one": "You have 1 message",
-  //     "other": "You have {{n}} messages"
-  //   }
-  // }
-  translator.translate('You have {{n}} messages', {
-    locale: 'en',
-    plurality: 0     // numerical values for pluraity
-  });
-  // -> "You have no messages"
-
-  translator.translate('You have {{n}} messages', {
-    locale: 'en',
-    plurality: 'messages.length',  // data property value for plurality
-    data: { messages: [ "Hello!" ] }
-  });
-  // -> "You have 1 message"
-  
-  // see gender for more info
-  // --[fr.json]--
-  // {
-  //   "{{name}} is a child": {
-  //     "other": {
-  //       "m": "{{name}} est un garçon",
-  //       "f": "{{name}} est une fille",
-  //       "n": "{{name}} est un enfant"
-  //     }
-  //   }
-  // }
-  translator.translate('{{name}} is a child', {
-    gender: 'f',
-    data: { name: 'Jenn' }
-  });
-  // -> "Jenn est une fille"
-
-}).catch(function (error) {
-  console.error('i18n:ERR!', error.message);
+// see plurals for more info
+// --[messages[en]]--
+// {
+//   "You have {{n}} messages": {
+//     "zero": "You have no messages",
+//     "one": "You have 1 message",
+//     "other": "You have {{n}} messages"
+//   }
+// }
+translator.translate('You have {{n}} messages', {
+  locale: 'en',
+  plurality: 0     // numerical values for pluraity
 });
+// -> "You have no messages"
+
+translator.translate('You have {{n}} messages', {
+  locale: 'en',
+  plurality: 'messages.length',  // data property value for plurality
+  data: { messages: [ "Hello!" ] }
+});
+// -> "You have 1 message"
+
+// see gender for more info
+// --[messages[fr]]--
+// {
+//   "{{name}} is a child": {
+//     "other": {
+//       "m": "{{name}} est un garçon",
+//       "f": "{{name}} est une fille",
+//       "n": "{{name}} est un enfant"
+//     }
+//   }
+// }
+translator.translate('{{name}} is a child', {
+  gender: 'f',
+  data: { name: 'Jenn' }
+});
+// -> "Jenn est une fille"
 ```
 
 
 ### Translator Options
 
-* `defaultLoacle` : *{string}* - the default locale when one is not specified (Default `"en"`)
-* `basePath` : *{string}* - the base path for relative messages paths. (Default `"."`)
-
+* `defaultLoacle` *{String}* - the default locale when one is not specified (Default `"en"`)
+* `availableLocales` *{Object}* - the available locales. This value is required to define plural rules
+* `tokenPattern` *{String}* - the pattern to use when replacing tokens in translation templates (default `/\{\{([\w.]+)\}\}/g`)
 
 ### Plural Rules
 

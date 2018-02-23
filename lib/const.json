@@ -10,5 +10,6 @@
   "GENDER_FEMALE": "f",
   "GENDER_NEUTRAL": "n",
 
-  "DEFAULT_LOCALE": "en"
+  "DEFAULT_LOCALE": "en",
+  "DEFAULT_TOKEN_PATTERN": "\\{\\{([\\w.]+)\\}\\}"
 }
